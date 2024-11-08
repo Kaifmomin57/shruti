@@ -1,12 +1,21 @@
 package com.example.myapplication.man_side
 
+import android.Manifest
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.example.myapplication.R
@@ -17,45 +26,44 @@ import com.example.myapplication.event.event_mam
 import com.example.myapplication.login_regester.AdminLoginActivity
 import com.example.myapplication.login_regester.RegisterActivity
 import com.example.myapplication.login_regester.ResetPasswordActivity
+import com.example.myapplication.volunter.volunter
 import nav_fregment.aboutus
 import nav_fregment.home
 import nav_fregment.profile
-import com.example.myapplication.volunter.volunter
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
-class mam_side : AppCompatActivity() {
-  lateinit var binding: ActivityMamSideBinding
+class MamSideActivity : AppCompatActivity() {
+  private lateinit var binding: ActivityMamSideBinding
+  private val excelFileName = "preasenty.xlsx"
+  private val PERMISSION_REQUEST_CODE = 100
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    enableEdgeToEdge()
     binding = ActivityMamSideBinding.inflate(layoutInflater)
     setContentView(binding.root)
 
-    if (intent.extras != null && intent.extras!!.containsKey("fragment_to_show")) {
-      val fragmentToShow = intent.getStringExtra("fragment_to_show")
-      if (fragmentToShow == "event_mam") {
-        fregmemt(event_mam(), false) // Navigate to event_mam fragment
-      }
-    } else {
-      // Default fragment to show
-      fregmemt(home(), true)
-    }
+    setupNavigation()
+    checkPermissionsAndDownloadExcelFile()
+  }
 
-
+  private fun setupNavigation() {
+    intent.getStringExtra("fragment_to_show")?.let {
+      if (it == "event_mam") replaceFragment(event_mam())
+    } ?: replaceFragment(home())
 
     binding.bottnavigation.setOnItemSelectedListener {
       when (it.itemId) {
-        R.id.about -> fregmemt(aboutus(), false)
-        R.id.volunter -> fregmemt(volunter(), false)
-        R.id.home -> fregmemt(home(), true)
-        R.id.events -> fregmemt(event_mam(), false)
-        R.id.profile -> fregmemt(profile(), false)
+        R.id.about -> replaceFragment(aboutus())
+        R.id.volunter -> replaceFragment(volunter())
+        R.id.home -> replaceFragment(home())
+        R.id.events -> replaceFragment(event_mam())
+        R.id.profile -> replaceFragment(profile())
       }
       true
     }
 
-    // menu button
     binding.toolbar.setOnClickListener {
       if (binding.drawerLayout.isDrawerOpen(binding.sidemenu)) {
         binding.drawerLayout.closeDrawer(binding.sidemenu)
@@ -77,94 +85,115 @@ class mam_side : AppCompatActivity() {
 
     binding.sidemenu.setNavigationItemSelectedListener {
       when (it.itemId) {
-        R.id.nav_contact -> {
-          val intent = Intent(this, contact::class.java)
-          startActivity(intent)
-          true
-        }
-
-        R.id.nav_support -> {
-          val intent = Intent(this, Support::class.java)
-          startActivity(intent)
-          true
-        }
-
-        R.id.nav_logout -> {
-          logoutAdmin()
-          true
-        }
-
-        R.id.regester -> {
-          val intent = Intent(this, RegisterActivity::class.java)
-          startActivity(intent)
-          true
-        }
-
-        R.id.ForgetPassword -> {
-          val intent = Intent(this, ResetPasswordActivity::class.java)
-          startActivity(intent)
-          true
-        }
-
-        R.id.nav_presenty -> {
-          openExcelFile()
-          true
-        }
-
-        else -> false
+        R.id.nav_contact -> startActivity(Intent(this, contact::class.java))
+        R.id.nav_support -> startActivity(Intent(this, Support::class.java))
+        R.id.nav_logout -> logoutAdmin()
+        R.id.regester -> startActivity(Intent(this, RegisterActivity::class.java))
+        R.id.ForgetPassword -> startActivity(Intent(this, ResetPasswordActivity::class.java))
+        R.id.nav_presenty -> openLocalExcelFile()
       }
+      true
     }
-
-    // Control visibility of Forget Password item
-    val menu = binding.sidemenu.menu
-    val forgetPasswordItem = menu.findItem(R.id.ForgetPassword)
-    val preferences = getSharedPreferences("AdminPrefs", MODE_PRIVATE)
-    val isSuperAdmin = preferences.getBoolean("isSuperAdmin", false)
-    forgetPasswordItem.isVisible = isSuperAdmin
   }
 
-
-  private fun fregmemt(fragment: Fragment, flag: Boolean) {
-    val transaction = supportFragmentManager.beginTransaction()
-    if (flag) {
-      transaction.replace(binding.relative.id, fragment) // Use replace here
-    } else {
-      transaction.replace(binding.relative.id, fragment)
-    }
-    transaction.commit()
+  private fun replaceFragment(fragment: Fragment) {
+    supportFragmentManager.beginTransaction()
+      .replace(binding.relative.id, fragment)
+      .commit()
   }
 
   private fun logoutAdmin() {
-    val preferences = getSharedPreferences("AdminPrefs", MODE_PRIVATE)
-    val editor = preferences.edit()
-    editor.putBoolean("isLoggedIn", false)
-    editor.putBoolean("isSuperAdmin", false) // Reset super admin status as well
-    editor.apply()
-
-    // Navigate back to the login screen
-    val intent = Intent(this, AdminLoginActivity::class.java)
-    startActivity(intent)
+    getSharedPreferences("AdminPrefs", MODE_PRIVATE).edit().apply {
+      putBoolean("isLoggedIn", false)
+      putBoolean("isSuperAdmin", false)
+      apply()
+    }
+    startActivity(Intent(this, AdminLoginActivity::class.java))
     finish()
   }
 
-  private fun openExcelFile() {
-    val excelFile = File(getExternalFilesDir(null), "preasenty.xlsx")
+  private fun checkPermissionsAndDownloadExcelFile() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      // Scoped storage on Android 11+ does not require explicit permissions for app-specific storage
+      downloadExcelFileOnInstall()
+    } else {
+      // For Android 10 and below, check READ_EXTERNAL_STORAGE permission
+      if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+        downloadExcelFileOnInstall()
+      } else {
+        ActivityCompat.requestPermissions(
+          this,
+          arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+          PERMISSION_REQUEST_CODE
+        )
+      }
+    }
+  }
 
-    val uri = FileProvider.getUriForFile(
-      this,
-      "${packageName}.fileprovider",
-      excelFile
-    )
+  private fun downloadExcelFileOnInstall() {
+    val sharedPrefs = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    if (sharedPrefs.getBoolean("isFirstLaunch", true)) {
+      copyExcelFileToAppSpecificDir()
+      sharedPrefs.edit().putBoolean("isFirstLaunch", false).apply()
+    }
+  }
 
-    val intent = Intent(Intent.ACTION_VIEW).apply {
-      setDataAndType(uri, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-      addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+  private fun copyExcelFileToAppSpecificDir() {
+    val file = File(getExternalFilesDir(null), excelFileName)
+    if (file.exists()) {
+      Toast.makeText(this, "Excel file already exists.", Toast.LENGTH_SHORT).show()
+      return
     }
 
     try {
-      startActivity(intent)
-    } catch (e: ActivityNotFoundException) {
-      Toast.makeText(this, "No app found to open Excel files", Toast.LENGTH_SHORT).show()
+      assets.open(excelFileName).use { inputStream ->
+        FileOutputStream(file).use { outputStream ->
+          inputStream.copyTo(outputStream)
+        }
+      }
+      Toast.makeText(this, "Excel file copied to app-specific storage.", Toast.LENGTH_SHORT).show()
+    } catch (e: IOException) {
+      Toast.makeText(this, "Failed to copy Excel file: ${e.message}", Toast.LENGTH_SHORT).show()
+      Log.e("MamSideActivity", "Error copying file: ${e.message}")
+    }
+  }
+
+  override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    if (requestCode == PERMISSION_REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+      downloadExcelFileOnInstall()
+    } else {
+      showPermissionDeniedDialog()
+    }
+  }
+
+  private fun showPermissionDeniedDialog() {
+    AlertDialog.Builder(this)
+      .setTitle("Permission Denied")
+      .setMessage("This app needs storage permission to access files. Please enable it in Settings.")
+      .setPositiveButton("Go to Settings") { _, _ ->
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName"))
+        startActivity(intent)
+      }
+      .setNegativeButton("Cancel", null)
+      .show()
+  }
+
+  private fun openLocalExcelFile() {
+    val localFile = File(getExternalFilesDir(null), excelFileName)
+    if (localFile.exists()) {
+      val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", localFile)
+      val intent = Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(uri, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+      }
+      try {
+        startActivity(intent)
+      } catch (e: ActivityNotFoundException) {
+        Toast.makeText(this, "No app found to open Excel files", Toast.LENGTH_SHORT).show()
+      }
+    } else {
+      Toast.makeText(this, "Excel file not found.", Toast.LENGTH_SHORT).show()
     }
   }
 }

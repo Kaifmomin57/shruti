@@ -3,8 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.myapplication">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" /><!-- Optional for API 28 and below -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -13,10 +18,10 @@
         android:fullBackupContent="@xml/backup_rules"
         android:label="NSS APP"
         android:icon="@drawable/img"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        android:requestLegacyExternalStorage="true"> <!-- Consider Scoped Storage changes -->
 
         <activity
             android:name=".login_regester.ResetPasswordActivity"
@@ -24,8 +29,6 @@
         <activity
             android:name=".login_regester.UserAdminActivity"
             android:exported="false" />
-
-
         <activity
             android:name=".login_regester.AdminLoginActivity"
             android:exported="false" />
@@ -40,17 +43,12 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".man_side.mam_side"
+            android:name=".man_side.MamSideActivity"
             android:exported="false" />
-
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="YOUR_API_KEY" />
 
 
         <activity
@@ -63,20 +61,24 @@
             android:name=".MainActivity"
             android:exported="false" />
 
-
-
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.myapplication.fileprovider"
+            android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <service
+            android:name=".event.MyFirebaseMessagingService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
     </application>
-
-
-
 
 </manifest>

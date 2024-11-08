@@ -14,7 +14,7 @@ import android.text.InputType
 import android.view.MotionEvent
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
-import com.example.myapplication.man_side.mam_side
+import com.example.myapplication.man_side.MamSideActivity
 
 class AdminLoginActivity : AppCompatActivity() {
 
@@ -34,7 +34,7 @@ class AdminLoginActivity : AppCompatActivity() {
 
     if (isLoggedIn) {
       // If already logged in, skip login and go directly to dashboard
-      val intent = Intent(this, mam_side::class.java)
+      val intent = Intent(this, MamSideActivity::class.java)
       startActivity(intent)
       finish()
       return // Important to prevent the rest of onCreate from running
@@ -115,7 +115,7 @@ class AdminLoginActivity : AppCompatActivity() {
     editor.putBoolean("isSuperAdmin", isSuperAdmin)
     editor.apply()
 
-    val intent = Intent(this, mam_side::class.java)
+    val intent = Intent(this, MamSideActivity::class.java)
     startActivity(intent)
     finish()
   }

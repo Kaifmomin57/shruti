@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapter.volunter_adapter
 import com.example.myapplication.databinding.ErrorDialogBinding
 import com.example.myapplication.databinding.FragmentVolunterBinding
-import com.example.myapplication.man_side.mam_side
+import com.example.myapplication.man_side.MamSideActivity
 import com.example.myapplication.moduel.volunter_viewmodel
 import com.example.myapplication.repo.volunter_repo
 import com.google.android.material.dialog.MaterialAlertDialogBuilder

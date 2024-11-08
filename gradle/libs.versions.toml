@@ -1,6 +1,9 @@
 [versions]
-agp = "8.5.1"
+agp = "8.7.2"
+coreKtxVersion = "1.15.0"
+firebaseBom = "33.5.1"
 firebaseBomVersion = "33.4.0"
+gson = "2.10.1"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -15,11 +18,22 @@ googleGmsGoogleServices = "4.4.2"
 firebaseDatabase = "21.0.0"
 firebaseStorageKtx = "21.0.0"
 firebaseFirestore = "25.1.0"
+playServicesMaps = "19.0.0"
 uiDesktop = "1.7.0"
+firebaseAuthKtx = "23.1.0"
+media3Exoplayer = "1.4.1"
+volley = "1.2.1"
+junitJunit = "4.12"
+monitor = "1.7.2"
+junitKtx = "1.2.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-ktx-v1150 = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-bom-v3351 = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 google-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -32,6 +46,13 @@ firebase-database = { group = "com.google.firebase", name = "firebase-database",
 firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 androidx-ui-desktop = { group = "androidx.compose.ui", name = "ui-desktop", version.ref = "uiDesktop" }
+play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
+androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3Exoplayer" }
+volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
+junit-junit = { group = "junit", name = "junit", version.ref = "junitJunit" }
+androidx-monitor = { group = "androidx.test", name = "monitor", version.ref = "monitor" }
+androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,140 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".event.add_data_fragment">
 
     <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:background="@color/powder_blue"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:backgroundTint="@color/white">
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardView"
+            <!-- Guidelines -->
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineStart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="16dp" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineEnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_end="16dp" />
+
+            <!-- Title Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/titleInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="8dp"
+                android:hint="Title"
+                app:layout_constraintEnd_toStartOf="@+id/guidelineEnd"
+                app:layout_constraintStart_toStartOf="@+id/guidelineStart"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Description Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/descriptionInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Description"
+                app:layout_constraintEnd_toStartOf="@+id/guidelineEnd"
+                app:layout_constraintStart_toStartOf="@+id/guidelineStart"
+                app:layout_constraintTop_toBottomOf="@id/titleInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top"
+                    android:inputType="textMultiLine"
+                    android:lines="4" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Date Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/dateInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Date"
+                android:inputType="date"
+                app:layout_constraintEnd_toStartOf="@+id/guidelineEnd"
+                app:layout_constraintStart_toStartOf="@+id/guidelineStart"
+                app:layout_constraintTop_toBottomOf="@id/descriptionInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="date" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Image View -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/imageCardView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="8dp"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toStartOf="@+id/guidelineEnd"
+                app:layout_constraintStart_toStartOf="@+id/guidelineStart"
+                app:layout_constraintTop_toBottomOf="@id/dateInputLayout"
+                app:layout_constraintWidth_percent="0.8">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clickable="true"
+                    android:contentDescription="@string/select_event_image"
+                    android:focusable="true"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/baseline_image_24" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Add Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonAdd"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Add"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guidelineEnd"
+                app:layout_constraintStart_toStartOf="@+id/guidelineStart"
+                app:layout_constraintTop_toBottomOf="@id/imageCardView" />
+
+            <!-- Progress Bar -->
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminateTint="@color/white"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp">
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/titleInputLayout"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:hint="Title"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editTextTitle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="text" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/descriptionInputLayout"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:hint="Description"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/titleInputLayout">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editTextDescription"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="top"
-                            android:inputType="textMultiLine"
-                            android:lines="4" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/dateInputLayout"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:hint="Date"
-                        android:inputType="date"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/descriptionInputLayout">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editTextDate"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="date" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/imageCardView"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_marginTop="16dp"
-                        app:cardCornerRadius="8dp"
-                        app:layout_constraintDimensionRatio="1:1"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/dateInputLayout"
-                        app:layout_constraintWidth_percent="0.8">
-
-                        <ImageView
-                            android:id="@+id/imageView"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:clickable="true"
-                            android:contentDescription="@string/select_event_image"
-                            android:focusable="true"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/baseline_image_24" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/buttonAdd"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="24dp"
-                        android:text="Add"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/imageCardView" />
-
-                    <ProgressBar
-                        android:id="@+id/progress_bar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:indeterminateTint="@color/white"
-                        android:visibility="gone"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </com.google.android.material.card.MaterialCardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
